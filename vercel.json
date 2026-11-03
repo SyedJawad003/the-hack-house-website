@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/admission",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
