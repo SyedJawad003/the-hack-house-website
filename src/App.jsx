@@ -1,6 +1,6 @@
 import React from 'react';
-import { AnimatePresence, motion, useMotionValueEvent, useScroll, useTransform } from 'framer-motion';
-import { ArrowRight, Menu, X, Heart, Sparkles, Palette, Users, Instagram, MapPin, CalendarDays, Clock3, Phone } from 'lucide-react';
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { ArrowRight, Menu, X, Heart, Sparkles, Palette, Users, Instagram, MapPin, CalendarDays, Clock3, Phone, ShieldCheck, GraduationCap, Star } from 'lucide-react';
 import AdmissionPage from './AdmissionPage.jsx';
 
 const programs = [
@@ -8,6 +8,14 @@ const programs = [
   { icon: Sparkles, title: 'Montessori Moments', age: 'Learn at their own pace', text: 'Hands-on discovery that encourages curiosity, independence and a love of learning through everyday activities.', color: 'blue', tag: 'Curious minds' },
   { icon: Palette, title: 'Creative Workshops', age: 'Imagine. Make. Explore.', text: 'Art, sensory play and creative experiences where children can express themselves and try something new.', color: 'yellow', tag: 'Creative play' },
   { icon: Users, title: 'Community Meetups', age: 'Growing together', text: 'Welcoming gatherings and shared experiences for children, parents and caregivers to connect.', color: 'green', tag: 'For families' },
+];
+
+const heroBenefits = [
+  { icon: Heart, title: 'Nurturing', detail: 'A caring place to belong', color: 'pink' },
+  { icon: GraduationCap, title: 'Thoughtful educators', detail: 'Guidance at every step', color: 'yellow' },
+  { icon: ShieldCheck, title: 'Safe & secure', detail: 'Care you can count on', color: 'green' },
+  { icon: Star, title: 'Joyful learning', detail: 'Made for curious minds', color: 'blue' },
+  { icon: Users, title: 'Family community', detail: 'Growing better together', color: 'purple' },
 ];
 
 const updates = [
@@ -135,6 +143,20 @@ function HomePage() {
   const [isLoading, setIsLoading] = React.useState(true);
   const [loadingProgress, setLoadingProgress] = React.useState(0);
   const [isUpdateOpen, setIsUpdateOpen] = React.useState(false);
+  const shouldReduceMotion = useReducedMotion();
+  const revealProps = (delay = 0, direction = 'up') => {
+    const offset = direction === 'left'
+      ? { x: -28, y: 0 }
+      : direction === 'right'
+        ? { x: 28, y: 0 }
+        : { x: 0, y: 20 };
+    return {
+      initial: shouldReduceMotion ? false : { opacity: 0, ...offset },
+      whileInView: shouldReduceMotion ? undefined : { opacity: 1, x: 0, y: 0 },
+      viewport: { once: true, amount: .15 },
+      transition: { duration: .55, delay, ease: [.22, 1, .36, 1] },
+    };
+  };
 
   React.useEffect(() => {
     if (isLoading) return undefined;
@@ -196,31 +218,58 @@ function HomePage() {
     <div id="top"><Header/>
     <main>
       <section className="hero section-wrap">
-        <div className="hero-copy"><motion.div className="eyebrow" initial={{opacity:0,y:15}} animate={{opacity:1,y:0}} transition={{duration:.6}}>A LITTLE PLACE FOR BIG BEGINNINGS</motion.div>
-          <motion.h1 initial={{opacity:0,y:24}} animate={{opacity:1,y:0}} transition={{duration:.75,delay:.1}}>A place to <em>learn,</em><br/>play and grow.</motion.h1>
-          <motion.p className="hero-text" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:.7,delay:.2}}>A warm, welcoming space for children to learn, play, create and discover the joy of being themselves.</motion.p>
-          <motion.div className="hero-actions" initial={{opacity:0,y:15}} animate={{opacity:1,y:0}} transition={{duration:.7,delay:.3}}><a className="button primary" href="#programs">Explore what we do <ArrowRight size={17}/></a><a className="text-link" href="#story">Get to know us <span>↗</span></a></motion.div>
-          <div className="hero-note"><span className="hero-note-mark"/><p>Thoughtful experiences for children and families.</p></div>
+        <div className="hero-scene" aria-hidden="true">
+          <div className="hero-art-panel hero-art-panel-left">
+            <span className="hero-art-sun">✹</span>
+            <div className="hero-art-signs"><b>Learn <span>♥</span></b><b>Play <span>✦</span></b><b>Grow <span>♥</span></b></div>
+            <div className="hero-art-blocks"><i/><i/><i/></div>
+            <span className="hero-art-spark">✦</span>
+          </div>
+          <div className="hero-art-panel hero-art-panel-right">
+            <span className="hero-art-rainbow">⌒</span>
+            <div className="hero-art-cloud"/>
+            <div className="hero-art-pencils"><i/><i/><i/><i/><i/></div>
+            <span className="hero-art-star">★</span>
+          </div>
         </div>
+        <div className="hero-copy"><motion.div className="eyebrow" initial={{opacity:0,y:15}} animate={{opacity:1,y:0}} transition={{duration:.6}}>A LITTLE PLACE FOR BIG BEGINNINGS</motion.div>
+          <motion.h1 initial={{opacity:0,y:24}} animate={{opacity:1,y:0}} transition={{duration:.75,delay:.1}}>A place to <em>learn,</em><br/><span className="hero-play-word">play</span> and <span className="hero-grow-word">grow.</span></motion.h1>
+          <motion.p className="hero-text" initial={{opacity:0,y:20}} animate={{opacity:1,y:0}} transition={{duration:.7,delay:.2}}>A warm, welcoming space for children to learn, play, create and discover the joy of being themselves.</motion.p>
+        </div>
+        <motion.div className="hero-actions" initial={{opacity:0,y:15}} animate={{opacity:1,y:0}} transition={{duration:.7,delay:.3}}><a className="button primary" href="#programs">Explore what we do <ArrowRight size={17}/></a><a className="text-link" href="#story">Get to know us <span>↗</span></a></motion.div>
+        <div className="hero-note"><span className="hero-note-mark"/><p>Thoughtful experiences for children and families.</p></div>
       </section>
+      <div className="hero-benefits" aria-label="What families can expect">
+        {heroBenefits.map(({ icon: Icon, title, detail, color }, index) => (
+          <motion.div {...revealProps(index * .07, index % 2 === 0 ? 'left' : 'right')} className="hero-benefit" key={title}>
+            <span className={`hero-benefit-icon ${color}`}><Icon size={20}/></span>
+            <b>{title}</b>
+            <small>{detail}</small>
+          </motion.div>
+        ))}
+      </div>
 
       <BrandScrollStory/>
-      <motion.section className="intro section-wrap" id="story" initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:.65}}><div className="section-kicker">A HAPPY PLACE TO BE</div><div className="intro-grid"><h2>Childhood should be full of <span className="scribble">wonder.</span></h2><div className="intro-copy"><p className="lead">At The Hack House, we believe the best learning often begins with a little curiosity — and plenty of play.</p><p>We bring children and families together through thoughtful experiences designed to nurture creativity, confidence, connection and discovery. Every child gets room to explore in their own way.</p><a className="under-link" href="#experience">Discover our approach <ArrowRight size={16}/></a></div></div><div className="values-row"><div><span className="value-icon pink-bg">♡</span><b>Kindness first</b><small>A caring space for everyone</small></div><div><span className="value-icon blue-bg">✳</span><b>Curiosity encouraged</b><small>Every question matters</small></div><div><span className="value-icon yellow-bg">✿</span><b>Learning by doing</b><small>Little hands, big discoveries</small></div></div></motion.section>
+      <motion.section className="intro section-wrap" id="story" initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:.65}}><div className="section-kicker">A HAPPY PLACE TO BE</div><div className="intro-grid"><motion.h2 {...revealProps(0, 'left')}>Childhood should be full of <span className="scribble">wonder.</span></motion.h2><motion.div className="intro-copy" {...revealProps(0, 'right')}><p className="lead">At The Hack House, we believe the best learning often begins with a little curiosity — and plenty of play.</p><p>We bring children and families together through thoughtful experiences designed to nurture creativity, confidence, connection and discovery. Every child gets room to explore in their own way.</p><a className="under-link" href="#experience">Discover our approach <ArrowRight size={16}/></a></motion.div></div><div className="values-row">{[
+        { icon: '♡', color: 'pink-bg', title: 'Kindness first', detail: 'A caring space for everyone' },
+        { icon: '✳', color: 'blue-bg', title: 'Curiosity encouraged', detail: 'Every question matters' },
+        { icon: '✿', color: 'yellow-bg', title: 'Learning by doing', detail: 'Little hands, big discoveries' },
+      ].map((value, index) => <motion.div {...revealProps(index * .08, index % 2 === 0 ? 'left' : 'right')} key={value.title}><span className={`value-icon ${value.color}`}>{value.icon}</span><b>{value.title}</b><small>{value.detail}</small></motion.div>)}</div></motion.section>
 
-      <section className="program-section" id="programs"><div className="section-wrap"><div className="program-heading"><div><div className="section-kicker">ROOM TO EXPLORE</div><h2>Something lovely<br/>for every <span>little learner.</span></h2></div><p>From playful meetups to creative workshops, there are lots of ways to make, move, connect and grow.</p></div><div className="program-grid">{programs.map((p,i)=>{const Icon=p.icon;return <motion.article className={`program-card ${p.color}`} key={p.title} initial={{opacity:0,y:35}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.2}} transition={{duration:.55,delay:i*.09}}><div className="card-top"><span className="program-icon"><Icon size={24}/></span><span className="card-number">0{i+1}</span></div><span className="tag">{p.tag}</span><h3>{p.title}</h3><h4>{p.age}</h4><p>{p.text}</p><a href="#contact" aria-label={`Ask about ${p.title}`}><ArrowRight size={19}/></a></motion.article>})}</div></div></section>
+      <section className="program-section" id="programs"><div className="section-wrap"><motion.div className="program-heading" {...revealProps()}><div><div className="section-kicker">ROOM TO EXPLORE</div><h2>Something lovely<br/>for every <span>little learner.</span></h2></div><p>From playful meetups to creative workshops, there are lots of ways to make, move, connect and grow.</p></motion.div><div className="program-grid">{programs.map((p,i)=>{const Icon=p.icon;return <motion.article {...revealProps(i*.09, i%2===0?'left':'right')} className={`program-card ${p.color}`} key={p.title}><div className="card-top"><span className="program-icon"><Icon size={24}/></span><span className="card-number">0{i+1}</span></div><span className="tag">{p.tag}</span><h3>{p.title}</h3><h4>{p.age}</h4><p>{p.text}</p><a href="#contact" aria-label={`Ask about ${p.title}`}><ArrowRight size={19}/></a></motion.article>})}</div></div></section>
 
       <section className="updates-section" id="updates">
         <div className="section-wrap">
-          <div className="updates-heading">
+          <motion.div className="updates-heading" {...revealProps()}>
             <div>
               <div className="section-kicker">WHAT'S HAPPENING</div>
               <h2>Our latest <span>updates.</span></h2>
             </div>
             <p>Events, meetups and little moments coming up at The Hack House.</p>
-          </div>
+          </motion.div>
           <div className="updates-grid">
-            {updates.map((update) => (
-              <article className="update-card" key={update.title}>
+            {updates.map((update, index) => (
+              <motion.article {...revealProps(index * .08, index % 2 === 0 ? 'left' : 'right')} className="update-card" key={update.title}>
                 <div className="update-copy">
                   <span className="update-badge">LATEST UPDATE</span>
                   <h3>{update.title}</h3>
@@ -239,26 +288,26 @@ function HomePage() {
                   <img className="update-poster" src={update.image} alt={`${update.title} event poster with date, time, fee and registration details`}/>
                   <span>View update</span>
                 </button>
-              </article>
+              </motion.article>
             ))}
           </div>
         </div>
       </section>
 
-      <motion.section className="experience section-wrap" id="experience" initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:.65}}><div className="experience-art"><div className="photo-frame"><div className="photo-placeholder"><div className="sun-doodle">☼</div><div className="rainbow-doodle">◜<span>◜</span><b>◜</b></div><div className="photo-words">little hands,<br/><em>big possibilities.</em></div><div className="tiny-stars">✦　✳　✦</div></div></div><div className="sticker sticker-one">PLAY<br/>MORE!</div><div className="sticker sticker-two">♡</div></div><div className="experience-copy"><div className="section-kicker">THE HACK HOUSE FEELING</div><h2>More than an activity.<br/><span>A place to belong.</span></h2><p>We want every visit to feel like stepping into a space where children can be themselves. A place to try something new, make a friend, get a little messy and leave with a story to tell.</p><ul><li><span>01</span> Welcoming, child-friendly experiences</li><li><span>02</span> Space for creativity and self-expression</li><li><span>03</span> Meaningful moments for the whole family</li></ul><a className="button dark" href="#contact">Let's make memories <ArrowRight size={17}/></a></div></motion.section>
+      <motion.section className="experience section-wrap" id="experience" initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:.65}}><motion.div className="experience-art" {...revealProps(0, 'left')}><div className="photo-frame"><div className="photo-placeholder"><div className="sun-doodle">☼</div><div className="rainbow-doodle">◜<span>◜</span><b>◜</b></div><div className="photo-words">little hands,<br/><em>big possibilities.</em></div><div className="tiny-stars">✦　✳　✦</div></div></div><div className="sticker sticker-one">PLAY<br/>MORE!</div><div className="sticker sticker-two">♡</div></motion.div><motion.div className="experience-copy" {...revealProps(0, 'right')}><div className="section-kicker">THE HACK HOUSE FEELING</div><h2>More than an activity.<br/><span>A place to belong.</span></h2><p>We want every visit to feel like stepping into a space where children can be themselves. A place to try something new, make a friend, get a little messy and leave with a story to tell.</p><ul><li><span>01</span> Welcoming, child-friendly experiences</li><li><span>02</span> Space for creativity and self-expression</li><li><span>03</span> Meaningful moments for the whole family</li></ul><a className="button dark" href="#contact">Let's make memories <ArrowRight size={17}/></a></motion.div></motion.section>
 
-      <section className="quote-section"><div className="quote-mark">“</div><p>Big things begin with little moments<br/>of <em>curiosity, courage and connection.</em></p><span>THE HACK HOUSE WAY</span><div className="quote-spark">✳</div></section>
+      <motion.section className="quote-section" {...revealProps()}><div className="quote-mark">“</div><p>Big things begin with little moments<br/>of <em>curiosity, courage and connection.</em></p><span>THE HACK HOUSE WAY</span><div className="quote-spark">✳</div></motion.section>
 
       <section className="centres-section" id="centres">
         <div className="section-wrap">
-          <div className="centres-heading">
+          <motion.div className="centres-heading" {...revealProps()}>
             <div className="section-kicker">TWO CENTRES, ONE CARING COMMUNITY</div>
             <h2>Find the right place<br/>to <span>grow.</span></h2>
             <p>Explore our two welcoming centres in Bahria Town, Rawalpindi.</p>
-          </div>
+          </motion.div>
           <div className="centres-grid">
             {centres.map((centre, index) => (
-              <article className={`centre-card ${centre.color}`} id={centre.id} key={centre.id}>
+              <motion.article {...revealProps(index * .1, index % 2 === 0 ? 'left' : 'right')} className={`centre-card ${centre.color}`} id={centre.id} key={centre.id}>
                 <div className="centre-card-top">
                   <span className="centre-number">0{index + 1}</span>
                   <span className="centre-icon"><MapPin size={20}/></span>
@@ -269,17 +318,17 @@ function HomePage() {
                 <a className="centre-link" href={`https://www.instagram.com/${centre.instagram}/`} target="_blank" rel="noreferrer">
                   <Instagram size={16}/> Visit Instagram <ArrowRight size={16}/>
                 </a>
-              </article>
+              </motion.article>
             ))}
           </div>
         </div>
       </section>
 
       <motion.section className="contact-section" id="contact" initial={{opacity:0,y:24}} whileInView={{opacity:1,y:0}} viewport={{once:true,amount:.15}} transition={{duration:.65}}><div className="contact-card"><div className="contact-left"><div className="section-kicker">COME SAY HELLO</div><h2>Let's make room<br/>for <span>more wonder.</span></h2><p>Have a question, want to know what's coming up, or interested in a visit? We'd love to hear from you.</p><a className="button primary" href="https://www.instagram.com/the_hackhouse/" target="_blank" rel="noreferrer">Connect on Instagram <ArrowRight size={17}/></a></div><div className="contact-right"><div className="contact-orbit"><div className="orbit-inner"><img src="/hack-house-logo-transparent.png"/></div><span className="orbit-star star-a">✦</span><span className="orbit-star star-b">✳</span></div><div className="contact-detail"><Instagram size={18}/><span>@the_hackhouse</span></div><div className="contact-detail"><MapPin size={18}/><span>Get in touch for location & visit details</span></div></div></div></motion.section>
-      <section className="admissions-step" id="admissions-step">
+      <motion.section className="admissions-step" id="admissions-step" {...revealProps()}>
         <div><span className="section-kicker">THE NEXT LITTLE STEP</span><h2>Ready to grow with us?</h2><p>Tell us about your child and we’ll help you find the right next step.</p></div>
         <a className="button primary" href="/admission">Explore admissions <ArrowRight size={17}/></a>
-      </section>
+      </motion.section>
     </main>
     <footer className="footer"><a href="#top" className="footer-brand"><img src="/hack-house-logo-transparent.png"/>The Hack House</a><p>Little minds. Big possibilities.</p><div className="footer-links"><a href="#story">Our story</a><a href="#programs">What we do</a><a href="https://www.instagram.com/the_hackhouse/" target="_blank" rel="noreferrer">Instagram <ArrowRight size={13}/></a></div><small>© {new Date().getFullYear()} The Hack House. Made with care.</small></footer>
   </div>
